@@ -57,60 +57,59 @@ public class Sistemas_de_Archivos_de_la_Alianza_Rebelde {
             System.err.println("Error al parsear con DOM: " + e.getMessage());
 
         }
-        //Paso 4 Creacion de Personaje
+        //Paso 3
+        LectorSAX();
+        //Paso 4 
         CreacionPersonaje();
     }
 
-    public class LectorSAX {
+    //Paso 3
+    public static void LectorSAX() {
+        System.out.println("=== Lectura con SAX ===");
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
 
-        public static void main(String[] args) {
-            try {
-                SAXParserFactory factory = SAXParserFactory.newInstance();
-                SAXParser saxParser = factory.newSAXParser();
+            DefaultHandler manejador = new DefaultHandler() {
+                private boolean esNombre = false;
+                private StringBuilder texto = new StringBuilder();
 
-                DefaultHandler manejador;
-                manejador = new DefaultHandler() {
-                    private boolean esNombre = false;
-                    private StringBuilder texto = new StringBuilder();
-
-                    // Se abre una etiqueta
-                    @Override
-                    public void startElement(String uri, String localName, String qName,
-                            Attributes attributes) throws SAXException {
-                        if (qName.equalsIgnoreCase("nave")) {
-                            System.out.print("Clase: " + attributes.getValue("Clase"));
-                        } else if (qName.equalsIgnoreCase("nombre")) {
-                            esNombre = true;
-                            texto.setLength(0);
-                        }
+                @Override
+                public void startElement(String uri, String localName, String qName,
+                        Attributes attributes) throws SAXException {
+                    if (qName.equalsIgnoreCase("nave")) {
+                        System.out.print("Clase: " + attributes.getValue("clase"));
+                    } else if (qName.equalsIgnoreCase("nombre")) {
+                        esNombre = true;
+                        texto.setLength(0);
                     }
+                }
 
-                    // Hay texto dentro de una etiqueta
-                    @Override
-                    public void characters(char[] ch, int start, int length) throws SAXException {
-                        if (esNombre) {
-                            texto.append(ch, start, length);
-                        }
+                @Override
+                public void characters(char[] ch, int start, int length) throws SAXException {
+                    if (esNombre) {
+                        texto.append(ch, start, length);
                     }
+                }
 
-                    // Se cierra una etiqueta
-                    @Override
-                    public void endElement(String uri, String localName, String qName)
-                            throws SAXException {
-                        if (qName.equalsIgnoreCase("nombre")) {
-                            System.out.println(" | Nombre: " + texto.toString().trim());
-                            esNombre = false;
-                        }
+                @Override
+                public void endElement(String uri, String localName, String qName)
+                        throws SAXException {
+                    if (qName.equalsIgnoreCase("nombre")) {
+                        System.out.println(" | Nombre: " + texto.toString().trim());
+                        esNombre = false;
                     }
-                };
+                }
+            };
 
-                saxParser.parse(new File("imperio.xml"), manejador);
+            saxParser.parse(new File("imperio.xml"), manejador);
 
-            } catch (Exception e) {
-                System.err.println("Error al parsear con SAX: " + e.getMessage());
-            }
+        } catch (Exception e) {
+            System.err.println("Error al parsear con SAX: " + e.getMessage());
+        
         }
     }
+    
     //Paso 4
     public static void CreacionPersonaje() {
         //Creamos instancia del fichero XML
